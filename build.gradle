@@ -15,9 +15,11 @@ repositories {
     mavenCentral()
 }
 
+def lc4jVersion = "1.13.0"
 dependencies {
-    implementation 'dev.langchain4j:langchain4j:0.36.2'
-    implementation 'dev.langchain4j:langchain4j-open-ai:0.36.2'
+    implementation "dev.langchain4j:langchain4j:${lc4jVersion}"
+    implementation "dev.langchain4j:langchain4j-open-ai:${lc4jVersion}"
+
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.slf4j:slf4j-simple:2.0.16'
