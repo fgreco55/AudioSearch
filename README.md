@@ -91,6 +91,17 @@ Set the minimum similarity score for search results (0.0 to 1.0).
 > /threshold             # Show current threshold
 ```
 
+### /topn - Set Maximum Results
+Set the maximum number of search results to return.
+
+```
+> /topn 10               # Return up to 10 results
+> /topn 3                # Return up to 3 results
+> /topn                  # Show current maximum
+```
+
+Default is 5 results.
+
 ### /status - Show Application Status
 Display loaded files and current settings.
 
@@ -100,6 +111,7 @@ AudioSearch Status:
 ────────────────────────────────────────────────────────────────────────────────
 Embedding Store: /path/to/embedding-store.json
 Relevance Threshold: 0.7500
+Maximum Search Results: 10
 Loaded Files: 3
   - frank.mp3
   - johnny-b-goode-chuck-berry.mp3
@@ -194,11 +206,41 @@ Multiple files' data are accumulated through merging:
 - New embeddings are appended
 - Metadata is combined
 
+## Large File Handling
+
+If an audio file exceeds Whisper's 25 MB size limit, AudioSearch will automatically:
+
+1. **Check for ffmpeg** - Requires ffmpeg to be installed on your system
+2. **Split into chunks** - Audio is split into 10-minute segments
+3. **Transcribe each chunk** - Each chunk is transcribed separately
+4. **Preserve timestamps** - Segment timestamps are adjusted to reflect their position in the original audio
+5. **Merge results** - All transcribed segments are combined into a single result
+
+### Installing ffmpeg
+
+To enable automatic chunking of large files:
+
+**macOS (Homebrew):**
+```bash
+brew install ffmpeg
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install ffmpeg
+```
+
+**Windows:**
+Download from https://ffmpeg.org/download.html
+
+If ffmpeg is not available and you try to load a file larger than 25 MB, you'll be prompted to either compress the audio or install ffmpeg.
+
 ## Notes
 
 - Segments with no meaningful speech are automatically excluded during indexing
 - The embedding store accumulates data from multiple files (cumulative)
 - Each segment preserves its audio timestamp for precise seeking
 - Search scores range from 0.0 (no match) to 1.0 (perfect match)
-- Results are limited to top 5 matches by default
+- Results are limited to top 5 matches by default (adjustable with /topn)
 - The embedding store is persisted as JSON and can be shared/backed up
+- Large audio files (>25 MB) are automatically split and transcribed in chunks with correct timestamps
