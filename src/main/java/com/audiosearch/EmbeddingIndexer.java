@@ -75,6 +75,7 @@ public class EmbeddingIndexer {
         System.out.println("Embedding " + segments.size() + " segments...");
 
         int skipped = 0;
+        int embedded = 0;
         for (TranscriptionSegment segment : segments) {
             String text = segment.text();
 
@@ -83,15 +84,21 @@ public class EmbeddingIndexer {
                 continue;
             }
 
+            embedded++;
+            System.out.print("\rEmbedding " + embedded + " out of " + (segments.size() - skipped));
+            System.out.flush();
+
             TextSegment textSegment = TextSegment.from(text);
             Embedding embedding = embeddingModel.embed(text).content();
             embeddingStore.add(embedding, textSegment);
             segmentMetadata.add(new SegmentMetadata(text, segment.start(), segment.end(), sourceFileName));
         }
 
-        System.out.println("Embedding complete. " + (segments.size() - skipped) + " segments indexed.");
+        System.out.print("\rEmbedding complete. " + embedded + " segments indexed.");
         if (skipped > 0) {
-            System.out.println("Skipped " + skipped + " segments with no speech.");
+            System.out.println("\nSkipped " + skipped + " segments with no speech.");
+        } else {
+            System.out.println();
         }
     }
 
