@@ -32,6 +32,15 @@ public class WhisperTranscriber {
             throw new IllegalArgumentException("Audio file not found: " + audioFile.getAbsolutePath());
         }
 
+        // Handle large files by splitting them into chunks
+        if (AudioSplitter.needsSplitting(audioFile)) {
+            return AudioSplitter.transcribeWithChunking(audioFile, this);
+        }
+
+        return transcribeSingleFile(audioFile);
+    }
+
+    private List<TranscriptionSegment> transcribeSingleFile(File audioFile) throws IOException {
         RequestBody fileBody = RequestBody.create(audioFile, MediaType.parse("audio/mpeg"));
 
         RequestBody requestBody = new MultipartBody.Builder()
