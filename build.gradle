@@ -1,0 +1,37 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+application {
+    mainClass = 'com.audiosearch.AudioSearchApp'
+    applicationName = 'audiosearch'
+}
+
+group = 'com.audiosearch'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'dev.langchain4j:langchain4j:0.36.2'
+    implementation 'dev.langchain4j:langchain4j-open-ai:0.36.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.16'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes['Main-Class'] = application.mainClass
+    }
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.filter { it.name.endsWith('jar') }.map { zipTree(it) }
+    }
+    duplicatesStrategy = 'EXCLUDE'
+    archiveFileName = 'audiosearch.jar'
+}

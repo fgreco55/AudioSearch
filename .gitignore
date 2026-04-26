@@ -1,0 +1,7 @@
+build/
+.gradle/
+.idea/
+*.iml
+*.jar
+embedding-store.json
+.DS_Store
