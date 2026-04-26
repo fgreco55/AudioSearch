@@ -63,6 +63,9 @@ public class AudioSearchApp {
             case "threshold":
                 commandHandler.handleThresholdCommand(argument);
                 break;
+            case "topn":
+                commandHandler.handleTopnCommand(argument);
+                break;
             case "status":
                 commandHandler.handleStatusCommand();
                 break;
