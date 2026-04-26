@@ -136,6 +136,7 @@ public class CommandHandler {
             System.out.println("Embedding Store: " + appState.getCurrentStoreFile());
         }
         System.out.println("Relevance Threshold: " + String.format("%.4f", appState.getRelevanceThreshold()));
+        System.out.println("Maximum Search Results: " + appState.getTopN());
         if (!storeFile.exists()) {
             System.out.println("No files loaded");
         } else {
@@ -190,7 +191,7 @@ public class CommandHandler {
 
             System.out.println("Searching...");
             SemanticSearcher searcher = new SemanticSearcher(apiKey, appState.getCurrentStoreFile());
-            List<SearchResult> allResults = searcher.search(query, 5);
+            List<SearchResult> allResults = searcher.search(query, appState.getTopN());
 
             List<SearchResult> filteredResults = new ArrayList<>();
             for (SearchResult result : allResults) {
@@ -290,12 +291,32 @@ public class CommandHandler {
         }
     }
 
+    public void handleTopnCommand(String argument) {
+        if (argument.isEmpty()) {
+            System.out.println("Maximum search results: " + appState.getTopN());
+            return;
+        }
+
+        try {
+            int topN = Integer.parseInt(argument);
+            if (topN < 1) {
+                System.err.println("Maximum results must be at least 1");
+                return;
+            }
+            appState.setTopN(topN);
+            System.out.println("Maximum search results set to: " + appState.getTopN());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid number. Please enter a positive integer");
+        }
+    }
+
     public void printHelp() {
         System.out.println("\nAvailable Commands:");
         System.out.println("  /index         - Specify the embedding-store file path");
         System.out.println("  /file          - Ingest an audio file into the embedding-store");
         System.out.println("  /search        - Search the embedding-store for semantically similar text");
         System.out.println("  /threshold     - Set the minimum relevance threshold (0.0-1.0) for search results");
+        System.out.println("  /topn          - Set the maximum number of search results to return");
         System.out.println("  /timestamps    - Display timestamps for all chunks in the embedding-store");
         System.out.println("  /status        - Display loaded files and current threshold value");
         System.out.println("  /deduplicate   - Remove duplicate entries from the embedding-store");
