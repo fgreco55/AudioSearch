@@ -1,8 +1,8 @@
 package com.audiosearch.commands;
 
-import com.audiosearch.EmbeddingIndexer;
-import com.audiosearch.SemanticSearcher;
-import com.audiosearch.WhisperTranscriber;
+import com.audiosearch.service.EmbeddingIndexer;
+import com.audiosearch.service.SemanticSearcher;
+import com.audiosearch.service.WhisperTranscriber;
 import com.audiosearch.model.SearchResult;
 import com.audiosearch.model.TranscriptionSegment;
 import com.google.gson.JsonArray;

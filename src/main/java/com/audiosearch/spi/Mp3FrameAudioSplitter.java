@@ -1,6 +1,6 @@
 package com.audiosearch.spi;
 
-import com.audiosearch.WhisperTranscriber;
+import com.audiosearch.service.WhisperTranscriber;
 import com.audiosearch.model.TranscriptionSegment;
 
 import java.io.BufferedInputStream;
