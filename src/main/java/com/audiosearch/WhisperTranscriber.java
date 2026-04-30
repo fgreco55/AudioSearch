@@ -1,6 +1,8 @@
 package com.audiosearch;
 
 import com.audiosearch.model.TranscriptionSegment;
+import com.audiosearch.spi.AudioSplitter;
+import com.audiosearch.spi.AudioSplitterFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,6 +19,7 @@ public class WhisperTranscriber {
     private static final String WHISPER_URL = "https://api.openai.com/v1/audio/transcriptions";
     private final String apiKey;
     private final OkHttpClient httpClient;
+    private final AudioSplitter audioSplitter;
 
     public WhisperTranscriber(String apiKey) {
         this.apiKey = apiKey;
@@ -25,6 +28,7 @@ public class WhisperTranscriber {
                 .readTimeout(300, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
+        this.audioSplitter = AudioSplitterFactory.create();
     }
 
     public List<TranscriptionSegment> transcribe(File audioFile) throws IOException {
@@ -34,7 +38,7 @@ public class WhisperTranscriber {
 
         // Handle large files by splitting them into chunks
         if (AudioSplitter.needsSplitting(audioFile)) {
-            return AudioSplitter.transcribeWithChunking(audioFile, this);
+            return audioSplitter.split(audioFile, this);
         }
 
         return transcribeSingleFile(audioFile);
