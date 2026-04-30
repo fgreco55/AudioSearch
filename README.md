@@ -208,17 +208,50 @@ Multiple files' data are accumulated through merging:
 
 ## Large File Handling
 
-If an audio file exceeds Whisper's 25 MB size limit, AudioSearch will automatically:
+If an audio file exceeds Whisper's 25 MB size limit, AudioSearch will automatically split it into chunks and transcribe each one:
 
-1. **Check for ffmpeg** - Requires ffmpeg to be installed on your system
-2. **Split into chunks** - Audio is split into 10-minute segments
-3. **Transcribe each chunk** - Each chunk is transcribed separately
-4. **Preserve timestamps** - Segment timestamps are adjusted to reflect their position in the original audio
-5. **Merge results** - All transcribed segments are combined into a single result
+1. **Split into chunks** - Audio is split into 10-minute segments
+2. **Transcribe each chunk** - Each chunk is transcribed separately via Whisper API
+3. **Preserve timestamps** - Segment timestamps are adjusted to reflect their position in the original audio
+4. **Merge results** - All transcribed segments are combined into a single result
 
-### Installing ffmpeg
+### Audio Splitter Implementations
 
-To enable automatic chunking of large files:
+AudioSearch supports two implementations:
+
+#### 1. Pure Java MP3 Frame Parser (Recommended for large files)
+- **No external dependencies** - Uses only Java standard library
+- **Accurate timestamp preservation** - Tracks actual frame durations, not fixed offsets
+- **Works without ffmpeg** - Best for environments where external tools cannot be installed
+
+#### 2. ffmpeg-based Splitter
+- **Uses external ffmpeg process** - Requires ffmpeg to be installed
+- **Reliable on complex MP3s** - Handles edge cases in MP3 format
+- **Fallback option** - Available if issues arise with pure Java parser
+
+### Choosing an Implementation
+
+Specify which splitter to use via startup parameter, environment variable, or auto-detection:
+
+```bash
+# Use pure Java (no ffmpeg needed)
+AUDIOSEARCH_SPLITTER=java ./gradlew run
+
+# Use ffmpeg explicitly
+java -Daudiosearch.splitter=ffmpeg -jar audiosearch.jar
+
+# Auto-detect (uses ffmpeg if available, falls back to Java)
+java -jar audiosearch.jar
+```
+
+**Priority order:**
+1. JVM system property: `-Daudiosearch.splitter=java|ffmpeg`
+2. Environment variable: `AUDIOSEARCH_SPLITTER=java|ffmpeg`
+3. Auto-detect: checks for ffmpeg availability
+
+### Installing ffmpeg (Optional)
+
+Only required if using the ffmpeg implementation explicitly:
 
 **macOS (Homebrew):**
 ```bash
@@ -232,8 +265,6 @@ sudo apt-get install ffmpeg
 
 **Windows:**
 Download from https://ffmpeg.org/download.html
-
-If ffmpeg is not available and you try to load a file larger than 25 MB, you'll be prompted to either compress the audio or install ffmpeg.
 
 ## Notes
 
