@@ -126,7 +126,7 @@ public class CommandHandler {
     }
 
     public void handleStatusCommand() {
-        System.out.println("\nAudioSearch Status:");
+        System.out.println("AudioSearch Status:");
         System.out.println("─".repeat(80));
 
         File storeFile = new File(appState.getCurrentStoreFile());

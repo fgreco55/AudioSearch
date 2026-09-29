@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
 }
 
-def lc4jVersion = "1.13.0"
+def lc4jVersion = "1.20.2"
 dependencies {
     implementation "dev.langchain4j:langchain4j:${lc4jVersion}"
     implementation "dev.langchain4j:langchain4j-open-ai:${lc4jVersion}"
